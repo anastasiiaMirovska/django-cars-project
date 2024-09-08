@@ -1,5 +1,11 @@
 from rest_framework import status
-from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    GenericAPIView,
+    ListAPIView,
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
@@ -13,23 +19,29 @@ from apps.cars.models import CarModel
 from apps.cars.serializers import CarSerializer
 
 
-class CarListCreateView(ListCreateAPIView):
+class CarCreateView(CreateAPIView):
     serializer_class = CarSerializer
     queryset = CarModel.objects.all()
-    permission_classes = (IsAdminOrWriteOnly,)
-    # filterset_class = CarFilter
+    permission_classes = (IsAuthenticated,)
+
+
+class CarListView(ListAPIView):
+    serializer_class = CarSerializer
+    queryset = CarModel.objects.all()
+    permission_classes = (AllowAny,)
 
 
 class CarRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     serializer_class = CarSerializer
     queryset = CarModel.objects.all()
 
-    def get_permissions(self):
-        car = self.get_object()
-        user = self.request.user
-        if car.user == user.id:
-            permissions = (AllowAny(),)
-        return (IsAdminUser(),)
+    # def get_permissions(self):
+    #     car = self.get_object()
+    #     user = self.request.user
+    #     if car.user == user.id:
+    #         permissions = (IsTestPermission(),)
+    #     return (IsAdminUser(),)
+
 
 
 class TestEmailView(GenericAPIView):

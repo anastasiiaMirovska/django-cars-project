@@ -17,7 +17,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer
+    profile = ProfileSerializer()
 
     class Meta:
         model = UserModel
@@ -42,7 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
             'is_superuser',
             'last_login',
             'created_at',
-            'updated_at'
+            'updated_at',
         )
         extra_kwargs = {
             'password': {
@@ -53,6 +53,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     @atomic
     def create(self, validated_data: dict):
+        print(validated_data)
         profile = validated_data.pop('profile')
         user = UserModel.objects.create_user(**validated_data)
         ProfileModel.objects.create(**profile, user=user)

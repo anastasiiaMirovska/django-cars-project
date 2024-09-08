@@ -10,6 +10,7 @@ from apps.cars.choices.body_type_choices import BodyTypeChoices
 from apps.cars.choices.currency_choices import CurrencyChoices
 from apps.cars.choices.engine_type_choices import EngineTypeChoices
 from apps.cars.choices.transmission_type_choices import TransmissionTypeChoices
+from apps.cars.managers import CarManager
 
 
 class CarBrandModel(models.Model):
@@ -40,8 +41,9 @@ class CarModel(BaseModel):
     year = models.IntegerField(validators=(V.MinValueValidator(1990), V.MaxValueValidator(datetime.now().year)))
     body_type = models.CharField(max_length=9, choices=BodyTypeChoices.choices, blank=False, null=False)
     car_model = models.ForeignKey(CarModelModel, on_delete=models.CASCADE, related_name='cars')
-    user = models.ForeignKey(UserModel, on_delete=models.CASCADE, related_name='cars')
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE, related_name='user_cars')
 
+    objects = CarManager()
 
 
 class CarProfileModel(BaseModel):

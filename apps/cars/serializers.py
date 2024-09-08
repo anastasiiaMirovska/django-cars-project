@@ -1,3 +1,5 @@
+from django.db.transaction import atomic
+
 from rest_framework import serializers
 
 from apps.cars.models import CarBrandModel, CarModel, CarModelModel, CarProfileModel
@@ -34,8 +36,17 @@ class CarSerializer(serializers.ModelSerializer):
             'car_model',
             'created_at',
             'updated_at',
-            'profile'
+            'profile',
         )
+
+    @atomic
+    def create(self, validated_data):
+        profile_data = validated_data.pop('profile')
+        request = self.context.get('request', None)
+        validated_data['user'] = request.user
+        car = CarModel.objects.create_car(**validated_data)
+        CarProfileModel.objects.create(car=car, **profile_data)
+        return car
 
 
 class CarBrandSerializer(serializers.ModelSerializer):
