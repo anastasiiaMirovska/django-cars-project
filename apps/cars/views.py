@@ -3,11 +3,13 @@ from django.db.models import Avg, Q
 from rest_framework import status
 from rest_framework.generics import (
     CreateAPIView,
+    DestroyAPIView,
     GenericAPIView,
     ListAPIView,
     ListCreateAPIView,
     RetrieveAPIView,
     RetrieveUpdateDestroyAPIView,
+    UpdateAPIView,
 )
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
@@ -36,7 +38,32 @@ class CarListView(ListAPIView):
     permission_classes = (AllowAny,)
 
 
-class CarRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+# class CarRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
+#     serializer_class = CarSerializer
+#     queryset = CarModel.objects.all()
+
+    # def get(self, request, *args, **kwargs):
+    #     permission_classes = (AllowAny,)
+    # def put(self, request, *args, **kwargs):
+    #     permission_classes = (IsOwnCar,)
+    # def patch(self, request, *args, **kwargs):
+    #     permission_classes = (IsOwnCar,)
+    # def delete(self, request, *args, **kwargs):
+    #     permission_classes = (IsOwnCar,)
+
+
+class CarRetrieveView(RetrieveAPIView):
+    serializer_class = CarSerializer
+    queryset = CarModel.objects.all()
+    permission_classes = (AllowAny,)
+
+
+class CarUpdateView(UpdateAPIView):
+    serializer_class = CarSerializer
+    queryset = CarModel.objects.all()
+    permission_classes = (IsOwnCar,)
+
+class CarDeleteView(DestroyAPIView):
     serializer_class = CarSerializer
     queryset = CarModel.objects.all()
     permission_classes = (IsOwnCar,)
@@ -52,7 +79,6 @@ class TestEmailView(GenericAPIView):
 
 class AveragePriceStatistics(RetrieveAPIView):
     permission_classes = (IsPremium,)
-    # ToDo set permission
     queryset = CarModel.objects.all()
 
     def get(self, *args, **kwargs):

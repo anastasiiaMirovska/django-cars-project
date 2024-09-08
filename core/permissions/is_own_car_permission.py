@@ -5,6 +5,6 @@ class IsOwnCar(BasePermission):
     def has_permission(self, request, view):
         user = request.user
         car_id = view.kwargs['pk']
-        if user.user_cars.filter(id=car_id).exists():
+        if user.is_authenticated and user.user_cars.filter(id=car_id).exists():
             return True
         return False
