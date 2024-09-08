@@ -17,7 +17,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer()
+    profile = ProfileSerializer
 
     class Meta:
         model = UserModel
@@ -26,19 +26,30 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'password',
             'is_active',
+            'is_premium',
             'is_staff',
             'is_superuser',
             'last_login',
             'created_at',
             'updated_at',
-            'profile'
+            'profile',
         )
-        read_only_fields = ('id', 'is_active', 'is_staff', 'is_superuser', 'last_login', 'created_at', 'updated_at')
+        read_only_fields = (
+            'id',
+            'is_active',
+            'is_premium',
+            'is_staff',
+            'is_superuser',
+            'last_login',
+            'created_at',
+            'updated_at'
+        )
         extra_kwargs = {
             'password': {
                 'write_only': True,
             }
         }
+
 
     @atomic
     def create(self, validated_data: dict):

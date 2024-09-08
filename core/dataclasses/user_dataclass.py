@@ -20,6 +20,7 @@ class User:
     is_active: bool
     is_staff: bool
     is_superuser: bool
+    is_premium: bool
     last_login: datetime
     created_at: datetime
     updated_at: datetime

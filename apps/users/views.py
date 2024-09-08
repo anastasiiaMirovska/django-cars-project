@@ -5,6 +5,8 @@ from rest_framework.generics import GenericAPIView, ListCreateAPIView
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 
+from core.permissions.is_super_user_permission import IsSuperUser
+
 from apps.users.serializers import UserSerializer
 
 UserModel = get_user_model()
@@ -14,6 +16,11 @@ class UserListCreateView(ListCreateAPIView):
     permission_classes = (AllowAny,)
     queryset = UserModel.objects.all()
     serializer_class = UserSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return (IsAdminUser(),)
+        return (AllowAny(),)
 
 
 class UserBlockView(GenericAPIView):
@@ -61,6 +68,22 @@ class UserToAdminView(GenericAPIView):
 
         if not user.is_staff:
             user.is_staff = True
+            user.save()
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+
+class AdminToUserView(GenericAPIView):
+    permission_classes = (IsSuperUser,)
+
+    def get_queryset(self):
+        return UserModel.objects.exclude(pk=self.request.user.pk)
+
+    def patch(self, *args, **kwargs):
+        user = self.get_object()
+
+        if user.is_staff:
+            user.is_staff = False
             user.save()
         serializer = UserSerializer(user)
         return Response(serializer.data, status.HTTP_200_OK)
