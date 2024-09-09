@@ -61,6 +61,7 @@ class CarProfileModel(BaseModel):
     region = models.CharField(max_length=20, choices=RegionChoices.choices, validators=(V.MinLengthValidator(1),))
     mileage = models.IntegerField(validators=(V.MinValueValidator(0), V.MaxValueValidator(999_999_999)))
     engine_type = models.CharField(max_length=20, choices=EngineTypeChoices.choices, blank=False, null=False)
+    engine_volume = models.FloatField(validators=(V.MinValueValidator(0.1), V.MaxValueValidator(100)))
     transmission_type = models.CharField(max_length=20, choices=TransmissionTypeChoices.choices, blank=False, null=False)
     description = models.TextField(max_length=255)
     color = models.CharField(max_length=20)

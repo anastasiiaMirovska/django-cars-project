@@ -19,6 +19,7 @@ class CarProfileSerializer(serializers.ModelSerializer):
             'region',
             'mileage',
             'engine_type',
+            'engine_volume',
             'transmission_type',
             'description',
         )

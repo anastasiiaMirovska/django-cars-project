@@ -24,7 +24,7 @@ from core.permissions.is_premium_permisssion import IsPremium
 from core.services.email_service import EmailService
 from core.services.word_validation_service import validate_inappropriate_language
 
-from apps.cars.filter import CarFilter
+from apps.cars.filters import CarFilter
 from apps.cars.models import CarBrandModel, CarModel, CarModelModel, CarProfileModel
 from apps.cars.serializers import CarBrandSerializer, CarModelSerializer, CarSerializer
 
@@ -40,6 +40,7 @@ class CarListView(ListAPIView):
     serializer_class = CarSerializer
     queryset = CarModel.objects.all()
     permission_classes = (AllowAny,)
+    filterset_class = CarFilter
 
 
 class CarRetrieveView(RetrieveAPIView):
