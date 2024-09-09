@@ -33,3 +33,4 @@ class ProfileModel(BaseModel):
     age = models.IntegerField()
     user = models.OneToOneField(UserModel, on_delete=models.CASCADE, related_name='profile')
     phone = models.CharField(max_length=13, validators=[V.RegexValidator(*RegexEnum.PHONE.value)])
+

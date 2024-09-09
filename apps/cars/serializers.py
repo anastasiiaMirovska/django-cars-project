@@ -70,6 +70,7 @@ class CarSerializer(serializers.ModelSerializer):
             'edit_attempts',
             'is_active'
         )
+        read_only_fields = ('is_active', 'edit_attempts')
 
     def validate(self, data):
 
