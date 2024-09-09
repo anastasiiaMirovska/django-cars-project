@@ -25,8 +25,8 @@ from core.services.email_service import EmailService
 from core.services.word_validation_service import validate_inappropriate_language
 
 from apps.cars.filter import CarFilter
-from apps.cars.models import CarBrandModel, CarModel, CarProfileModel
-from apps.cars.serializers import CarBrandSerializer, CarSerializer
+from apps.cars.models import CarBrandModel, CarModel, CarModelModel, CarProfileModel
+from apps.cars.serializers import CarBrandSerializer, CarModelSerializer, CarSerializer
 
 
 # --------------------------------------- Cars views start --------------------------------------------
@@ -34,49 +34,6 @@ class CarCreateView(CreateAPIView):
     serializer_class = CarSerializer
     queryset = CarModel.objects.all()
     permission_classes = (IsAuthenticated,)
-
-    # @atomic
-    # def post(self, request, *args, **kwargs):
-    #     serializer = CarSerializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     user = request.user
-    #
-    #
-    #     # Create car with is_active=False if inappropriate language is detected
-    #     inappropriate_fields = validate_inappropriate_language(profile_data)
-    #     is_active = True
-    #     if inappropriate_fields:
-    #         is_active = False
-    #
-    #     car = CarModel.objects.create_car(
-    #         **serializer.validated_data,
-    #         is_active=is_active,
-    #         user=user
-    #     )
-    #     car.save()
-    #
-    #     if not is_active:
-    #         raise ValidationError(
-    #             f"Foul language in the margins: {', '.join(inappropriate_fields)}. Fix it and try again.")
-    #
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-    # @atomic
-    # def post(self, request, *args, **kwargs):
-    #     serializer = CarSerializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     profile_data = serializer.validated_data.pop('profile', {})
-    #     user = request.user
-    #
-    #     # Створення автомобіля
-    #     car = CarModel.objects.create_car(user=user, **serializer.validated_data)
-    #
-    #     # Створення профілю автомобіля
-    #     if profile_data:
-    #         CarProfileModel.objects.create(car=car, **profile_data)
-    #
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CarListView(ListAPIView):
@@ -96,46 +53,86 @@ class CarUpdateView(UpdateAPIView):
     queryset = CarModel.objects.all()
     permission_classes = (IsOwnCar,)
 
-    # def patch(self, request, *args, **kwargs):
-    # @atomic
-    # def patch(self, request, *args, **kwargs):
-    #     car = self.get_object()
-    #     serializer = self.get_serializer(car, data=request.data, partial=True)
-    #     serializer.is_valid(raise_exception=True)
-    #
-    #     profile_data = serializer.validated_data.pop('profile', None)
-    #     inappropriate_fields = validate_inappropriate_language(profile_data) if profile_data else []
-    #
-    #     if inappropriate_fields:
-    #         car.edit_attempts += 1
-    #         if car.edit_attempts >= 3:
-    #             # Send email to manager
-    #             EmailService.check_bad_words_email(user_id=str(car.user.id), car_id=str(car.id))
-    #             raise ValidationError(f"Foul language detected. You have exceeded the maximum number of attempts.")
-    #         car.save()
-    #         raise ValidationError(
-    #             f"Foul language in the margins: {', '.join(inappropriate_fields)}. Fix it and try again.")
-    #
-    #     # If no inappropriate language, reset edit_attempts and set is_active to True
-    #     car.is_active = True
-    #     car.edit_attempts = 0
-    #     car.save()
-    #
-    #     return super().patch(request, *args, **kwargs)
 
-
-class CarDeleteView(DestroyAPIView):
+class CarDestroyView(DestroyAPIView):
     serializer_class = CarSerializer
     queryset = CarModel.objects.all()
     permission_classes = (IsOwnCar,)
 
+# --------------------------------------- Cars views end --------------------------------------------
+# --------------------------------------- Brands views start --------------------------------------------
 
-class TestEmailView(GenericAPIView):
+class BrandCreateView(CreateAPIView):
+    serializer_class = CarBrandSerializer
+    permission_classes = (IsAdminUser,)
+    queryset = CarBrandModel.objects.all()
+
+
+class BrandListView(ListAPIView):
+    serializer_class = CarBrandSerializer
     permission_classes = (AllowAny,)
+    queryset = CarBrandModel.objects.all()
+    pagination_class = None
 
-    def get(self, *args, **kwargs):
-        EmailService.send_test()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class BrandRetrieveView(RetrieveAPIView):
+    serializer_class = CarBrandSerializer
+    permission_classes = (AllowAny,)
+    queryset = CarBrandModel.objects.all()
+
+
+class BrandUpdateView(UpdateAPIView):
+    serializer_class = CarBrandSerializer
+    permission_classes = (IsAdminUser,)
+    queryset = CarBrandModel.objects.all()
+
+
+class BrandDestroyView(DestroyAPIView):
+    serializer_class = CarBrandSerializer
+    permission_classes = (IsAdminUser,)
+    queryset = CarBrandModel.objects.all()
+
+# --------------------------------------- Brands views end --------------------------------------------
+# --------------------------------------- Car models views start --------------------------------------------
+
+
+class ModelCreateView(CreateAPIView):
+    serializer_class = CarModelSerializer
+    permission_classes = (IsAdminUser,)
+    queryset = CarModelModel.objects.all()
+
+
+class ModelListView(ListAPIView):
+    serializer_class = CarModelSerializer
+    permission_classes = (AllowAny,)
+    queryset = CarModelModel.objects.all()
+    pagination_class = None
+
+
+class ModelRetrieveView(RetrieveAPIView):
+    serializer_class = CarModelSerializer
+    permission_classes = (AllowAny,)
+    queryset = CarModelModel.objects.all()
+
+
+class ModelUpdateView(UpdateAPIView):
+    serializer_class = CarModelSerializer
+    permission_classes = (IsAdminUser,)
+    queryset = CarModelModel.objects.all()
+
+
+class ModelDestroyView(DestroyAPIView):
+    serializer_class = CarModelSerializer
+    permission_classes = (IsAdminUser,)
+    queryset = CarModelModel.objects.all()
+
+# --------------------------------------- Car models views end --------------------------------------------
+
+# class TestEmailView(GenericAPIView):
+#     permission_classes = (AllowAny,)
+#
+#     def get(self, *args, **kwargs):
+#         EmailService.send_test()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AveragePriceStatistics(RetrieveAPIView):
@@ -150,36 +147,3 @@ class AveragePriceStatistics(RetrieveAPIView):
         average_price = cars.aggregate(Avg('price'))['price__avg']
         return Response({'average_price': average_price}, status=status.HTTP_200_OK)
 
-# --------------------------------------- Cars views end --------------------------------------------
-# --------------------------------------- Brands views start --------------------------------------------
-
-
-class BrandsCreateAPIView(CreateAPIView):
-    serializer_class = CarBrandSerializer
-    permission_classes = (IsAdminUser,)
-    queryset = CarBrandModel.objects.all()
-
-
-class BrandsListAPIView(ListAPIView):
-    serializer_class = CarBrandSerializer
-    permission_classes = (AllowAny,)
-    queryset = CarBrandModel.objects.all()
-
-class BrandRetrieveAPIView(RetrieveAPIView):
-    serializer_class = CarBrandSerializer
-    permission_classes = (IsAdminUser,)
-    queryset = CarBrandModel.objects.all()
-
-
-class BrandUpdateAPIView(UpdateAPIView):
-    serializer_class = CarBrandSerializer
-    permission_classes = (IsAdminUser,)
-    queryset = CarBrandModel.objects.all()
-
-
-class BrandDestroyAPIView(DestroyAPIView):
-    serializer_class = CarBrandSerializer
-    permission_classes = (IsAdminUser,)
-    queryset = CarBrandModel.objects.all()
-
-# --------------------------------------- Brands views end --------------------------------------------

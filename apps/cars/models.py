@@ -9,6 +9,7 @@ from apps.auth.serializers import UserModel
 from apps.cars.choices.body_type_choices import BodyTypeChoices
 from apps.cars.choices.currency_choices import CurrencyChoices
 from apps.cars.choices.engine_type_choices import EngineTypeChoices
+from apps.cars.choices.region_choices import RegionChoices
 from apps.cars.choices.transmission_type_choices import TransmissionTypeChoices
 from apps.cars.managers import CarManager
 
@@ -24,7 +25,7 @@ class CarBrandModel(models.Model):
 class CarModelModel(models.Model):
     class Meta:
         db_table = 'car_models'
-        ordering = ['brand']
+        ordering = ['-brand']
         unique_together = ('name', 'brand')
 
     name = models.CharField(max_length=20, validators=(V.MinLengthValidator(1),))
@@ -57,10 +58,10 @@ class CarProfileModel(BaseModel):
         ordering = ['id']
 
     city = models.CharField(max_length=20, validators=(V.MinLengthValidator(1),))
-    region = models.CharField(max_length=20, validators=(V.MinLengthValidator(1),))
+    region = models.CharField(max_length=20, choices=RegionChoices.choices, validators=(V.MinLengthValidator(1),))
     mileage = models.IntegerField(validators=(V.MinValueValidator(0), V.MaxValueValidator(999_999_999)))
     engine_type = models.CharField(max_length=20, choices=EngineTypeChoices.choices, blank=False, null=False)
-    transmission_type = models.CharField(max_length=20, choices=TransmissionTypeChoices, blank=False, null=False)
+    transmission_type = models.CharField(max_length=20, choices=TransmissionTypeChoices.choices, blank=False, null=False)
     description = models.TextField(max_length=255)
     color = models.CharField(max_length=20)
     owner_amount = models.IntegerField(default=0, validators=(V.MaxValueValidator(30),))
