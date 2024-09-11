@@ -47,7 +47,6 @@ urlpatterns = [
     path('/models/<int:pk>/update', ModelUpdateView.as_view(), name='car_model_update'),
     path('/models/<int:pk>/destroy', ModelDestroyView.as_view(), name='car_model_destroy'),
 
-    # path('/test', TestEmailView.as_view()),
     path('/<int:pk>/avg_price', AveragePriceStatistics.as_view(), name='average_price_statistics'),
     path('/<int:pk>/avg_region_price', AverageRegionPriceStatistics.as_view(), name='average_region_price_statistics'),
     path('/<int:pk>/avg_city_price', AverageCityPriceStatistics.as_view(), name='average_city_price_statistics'),

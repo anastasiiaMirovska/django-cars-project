@@ -193,37 +193,33 @@ class ModelDestroyView(DestroyAPIView):
 
 # --------------------------------------- Car models views end --------------------------------------------
 
-# class TestEmailView(GenericAPIView):
-#     permission_classes = (AllowAny,)
-#
-#     def get(self, *args, **kwargs):
-#         EmailService.send_test()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 class AveragePriceStatistics(RetrieveAPIView):
+    """Get average car price in Ukraine"""
     permission_classes = (IsPremium,)
     queryset = CarModel.objects.all()
 
     def get(self, *args, **kwargs):
         average = CarModel.objects.average_price_statistics(car=self.get_object())
-        return Response({'average_price': average}, status=status.HTTP_200_OK)
+        return Response({'average_price in UAH': average}, status=status.HTTP_200_OK)
 
 
 class AverageRegionPriceStatistics(RetrieveAPIView):
+    """Get average car price in the region"""
     permission_classes = (IsPremium,)
     queryset = CarModel.objects.all()
 
     def get(self, *args, **kwargs):
         average = CarModel.objects.average_region_price_statistics(car=self.get_object())
-        return Response({'average_price': average}, status=status.HTTP_200_OK)
+        return Response({'average_price in UAH': average}, status=status.HTTP_200_OK)
 
 
 class AverageCityPriceStatistics(RetrieveAPIView):
+    """Get average car price in the city"""
     permission_classes = (IsPremium,)
     queryset = CarModel.objects.all()
 
     def get(self, *args, **kwargs):
         average = CarModel.objects.average_city_price_statistics(car=self.get_object())
-        return Response({'average_price': average}, status=status.HTTP_200_OK)
+        return Response({'average_price in UAH': average}, status=status.HTTP_200_OK)
 

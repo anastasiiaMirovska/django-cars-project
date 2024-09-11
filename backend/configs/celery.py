@@ -13,6 +13,6 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     "fetch_privat_bank_data": {
         'task': 'core.services.currency_service.fetch_currency',
-        'schedule': crontab(minute='0', hour='6')
+        'schedule': crontab(minute='1', hour='6')
     }
 }

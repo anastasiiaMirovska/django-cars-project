@@ -27,9 +27,6 @@ class EmailService:
         msg.attach_alternative(html_context, 'text/html')
         msg.send()
 
-    @classmethod
-    def send_test(cls):
-        cls.__send_email('anastasiia.mirovska@gmail.com', 'test.html', {}, 'Test Email')
 
     @classmethod
     def register_email(cls, user: User):

@@ -114,7 +114,6 @@ class CurrencyModel(models.Model):
     last_update = models.DateTimeField(auto_now=True)
 
 
-
 class ViewStatisticsModel(models.Model):
     class Meta:
         db_table = 'views'
