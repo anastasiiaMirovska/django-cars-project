@@ -8,7 +8,10 @@ from django.template.loader import get_template
 from configs.celery import app
 
 from core.dataclasses.user_dataclass import User
+from core.exceptions.currency_exception import CurrencyException
 from core.services.jwt_service import ActivateToken, JWTService, RecoveryToken
+
+from apps.cars.models import CarPriceModel, CurrencyModel
 
 UserModel = get_user_model()
 
@@ -51,4 +54,3 @@ class EmailService:
         manager = random.choice(managers)
 
         cls.__send_email(manager.email, 'bad_words.html', {'user_id': f'{user_id}', 'car_id': f'{car_id}'}, 'Bad words detected')
-

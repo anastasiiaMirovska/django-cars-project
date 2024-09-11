@@ -37,8 +37,8 @@ class CarModel(BaseModel):
         db_table = 'cars'
         ordering = ('-id',)
 
-    price = models.IntegerField(validators=(V.MinValueValidator(0), V.MaxValueValidator(100_000_000)))
-    currency = models.CharField(max_length=3, choices=CurrencyChoices.choices, blank=False, null=False)
+    # price = models.IntegerField(validators=(V.MinValueValidator(0), V.MaxValueValidator(100_000_000)))
+    # currency = models.CharField(max_length=3, choices=CurrencyChoices.choices, blank=False, null=False)
     year = models.IntegerField(validators=(V.MinValueValidator(1990), V.MaxValueValidator(datetime.now().year)))
     is_used = models.BooleanField(default=False)
     body_type = models.CharField(max_length=9, choices=BodyTypeChoices.choices, blank=False, null=False)
@@ -67,3 +67,58 @@ class CarProfileModel(BaseModel):
     owner_amount = models.IntegerField(default=0, validators=(V.MaxValueValidator(30),))
 
     car = models.OneToOneField(CarModel, on_delete=models.CASCADE, related_name='profile')
+
+
+class CarPriceModel(models.Model):
+    class Meta:
+        db_table = 'car_price'
+        ordering = ['id']
+    initial_price = models.DecimalField(max_digits=20, decimal_places=5, validators=[V.MinValueValidator(1), ])
+    initial_currency = models.CharField(max_length=3, choices=CurrencyChoices.choices)
+
+    price_in_USD = models.DecimalField(max_digits=20, decimal_places=5)
+    price_in_EUR = models.DecimalField(max_digits=20, decimal_places=5)
+    price_in_UAH = models.DecimalField(max_digits=20, decimal_places=5)
+
+    car = models.OneToOneField(CarModel, on_delete=models.CASCADE, related_name='price')
+
+    def save(self, *args, **kwargs):
+        usd_rate_sale = CurrencyModel.objects.get(currency='USD').sale_price
+        usd_rate_buy = CurrencyModel.objects.get(currency='USD').buy_price
+        eur_rate_sale = CurrencyModel.objects.get(currency='EUR').sale_price
+        eur_rate_buy = CurrencyModel.objects.get(currency='EUR').buy_price
+
+        if self.initial_currency == 'USD':
+            self.price_in_USD = self.initial_price
+            self.price_in_EUR = self.initial_price * usd_rate_buy / eur_rate_sale
+            self.price_in_UAH = self.initial_price * usd_rate_buy
+        elif self.initial_currency == 'EUR':
+            self.price_in_EUR = self.initial_price
+            self.price_in_USD = self.initial_price * eur_rate_buy / usd_rate_sale
+            self.price_in_UAH = self.initial_price * eur_rate_buy
+        elif self.initial_currency == 'UAH':
+            self.price_in_UAH = self.initial_price
+            self.price_in_USD = self.initial_price / usd_rate_sale
+            self.price_in_EUR = self.initial_price / eur_rate_sale
+
+        super().save(*args, **kwargs)
+
+
+class CurrencyModel(models.Model):
+    class Meta:
+        db_table = 'currency'
+        ordering = ['id']
+    currency = models.CharField(max_length=3, choices=CurrencyChoices.choices, unique=True)
+    buy_price = models.DecimalField(max_digits=10, decimal_places=5, validators=(V.MinValueValidator(0.1), ),)
+    sale_price = models.DecimalField(max_digits=10, decimal_places=5, validators=(V.MinValueValidator(0.1), ))
+    last_update = models.DateTimeField(auto_now=True)
+
+
+
+class ViewStatisticsModel(models.Model):
+    class Meta:
+        db_table = 'views'
+        ordering = ('id',)
+
+    viewed_at = models.DateTimeField(auto_now_add=True)
+    car = models.ForeignKey(CarModel, on_delete=models.CASCADE, related_name='views')

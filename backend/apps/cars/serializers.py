@@ -6,7 +6,7 @@ from rest_framework.exceptions import ValidationError
 from core.services.email_service import EmailService
 from core.services.word_validation_service import validate_inappropriate_language
 
-from apps.cars.models import CarBrandModel, CarModel, CarModelModel, CarProfileModel
+from apps.cars.models import CarBrandModel, CarModel, CarModelModel, CarPriceModel, CarProfileModel, CurrencyModel
 from apps.users.serializers import ProfileSerializer
 
 
@@ -50,16 +50,42 @@ class CarModelSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
+class CarPriceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarPriceModel
+        fields = (
+            'initial_price',
+            'initial_currency',
+            'price_in_USD',
+            'price_in_EUR',
+            'price_in_UAH',
+            'car',
+        )
+        read_only_fields = ('price_in_USD', 'price_in_EUR', 'price_in_UAH', 'car')
+
+
+class CurrencySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CurrencyModel
+        fields = (
+            'currency',
+            'buy_price',
+            'sale_price',
+            'last_update'
+        )
+        read_only_fields = ('currency', 'buy_price', 'sale_price', 'last_update')
+
+
 class CarSerializer(serializers.ModelSerializer):
     profile = CarProfileSerializer()
     car_model = serializers.PrimaryKeyRelatedField(queryset=CarModelModel.objects.all())
+    price = CarPriceSerializer()
 
     class Meta:
         model = CarModel
         fields = (
             'id',
             'price',
-            'currency',
             'year',
             'is_used',
             'body_type',
@@ -102,21 +128,25 @@ class CarSerializer(serializers.ModelSerializer):
 
     @atomic
     def create(self, validated_data):
-        profile_data = validated_data.pop('profile', {})
-        # car_model = validated_data.pop('car_model')
+
         request = self.context.get('request', None)
         validated_data['user'] = request.user
 
-        car_model = validated_data.pop('car_model')
+        car_model = validated_data.pop('car_model', {})
         if isinstance(car_model, int):
             car_model = CarModelModel.objects.get(id=car_model)
         validated_data['car_model'] = car_model
+
+        price =validated_data.pop('price', {})
+
+        profile_data = validated_data.pop('profile', {})
         is_active = False
         if not validate_inappropriate_language(profile_data):
             is_active = True
 
         car = CarModel.objects.create_car(**validated_data, is_active=is_active)
         CarProfileModel.objects.create(car=car, **profile_data)
+        CarPriceModel.objects.create(car=car, **price)
         car.save()
 
         return car

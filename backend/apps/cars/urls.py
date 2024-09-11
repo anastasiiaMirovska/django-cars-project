@@ -1,6 +1,9 @@
 from django.urls import path
 
 from apps.cars.views import (  # TestEmailView,; AveragePriceStatistics,; AverageRegionPriceStatistics,
+    AverageCityPriceStatistics,
+    AveragePriceStatistics,
+    AverageRegionPriceStatistics,
     BrandCreateView,
     BrandDestroyView,
     BrandListView,
@@ -16,6 +19,7 @@ from apps.cars.views import (  # TestEmailView,; AveragePriceStatistics,; Averag
     ModelListView,
     ModelRetrieveView,
     ModelUpdateView,
+    ViewCountView,
 )
 
 
@@ -29,6 +33,7 @@ urlpatterns = [
     path('/<int:pk>/retrieve', CarRetrieveView.as_view(), name='car_retrieve'),
     path('/<int:pk>/update', CarUpdateView.as_view(), name='car_update'),
     path('/<int:pk>/destroy', CarDestroyView.as_view(), name='car_destroy'),
+    path('/<int:car_id>/views/<str:period>', ViewCountView.as_view(), name='view_count'),
 
     path('/brands', BrandListView.as_view(), name='car_brand_list'),
     path('/brands/create', BrandCreateView.as_view(), name='car_brand_create'),
@@ -43,6 +48,7 @@ urlpatterns = [
     path('/models/<int:pk>/destroy', ModelDestroyView.as_view(), name='car_model_destroy'),
 
     # path('/test', TestEmailView.as_view()),
-    # path('/<int:pk>/avg_price', AveragePriceStatistics.as_view(), name='average_price_statistics'),
-    # path('/<int:pk>/avg_region_price', AverageRegionPriceStatistics.as_view(), name='average_region_price_statistics'),
+    path('/<int:pk>/avg_price', AveragePriceStatistics.as_view(), name='average_price_statistics'),
+    path('/<int:pk>/avg_region_price', AverageRegionPriceStatistics.as_view(), name='average_region_price_statistics'),
+    path('/<int:pk>/avg_city_price', AverageCityPriceStatistics.as_view(), name='average_city_price_statistics'),
 ]

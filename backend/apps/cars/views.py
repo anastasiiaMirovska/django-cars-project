@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 from django.db.models import Avg, Q
 from django.db.transaction import atomic
 from django.utils.decorators import method_decorator
+from django.utils.timezone import now
 
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -13,22 +16,25 @@ from rest_framework.generics import (
     RetrieveAPIView,
     RetrieveUpdateDestroyAPIView,
     UpdateAPIView,
+    get_object_or_404,
 )
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from drf_yasg.utils import swagger_auto_schema
 
 from core.pagination import PagePagination
 from core.permissions.is_admin_or_write_only import IsAdminOrWriteOnly
+from core.permissions.is_car_owner_and_premium import IsCarOwnerAndPremium
 from core.permissions.is_own_car_permission import IsOwnCar
 from core.permissions.is_premium_permisssion import IsPremium
 from core.services.email_service import EmailService
 from core.services.word_validation_service import validate_inappropriate_language
 
 from apps.cars.filters import CarFilter
-from apps.cars.models import CarBrandModel, CarModel, CarModelModel, CarProfileModel
+from apps.cars.models import CarBrandModel, CarModel, CarModelModel, CarProfileModel, ViewStatisticsModel
 from apps.cars.serializers import CarBrandSerializer, CarModelSerializer, CarSerializer
 
 
@@ -48,12 +54,20 @@ class CarListView(ListAPIView):
     filterset_class = CarFilter
 
 
+
+
 @method_decorator(name='get', decorator=swagger_auto_schema(security=[], operation_summary='Get a specific car'))
 class CarRetrieveView(RetrieveAPIView):
     """Get a specific car"""
     serializer_class = CarSerializer
     queryset = CarModel.objects.all()
     permission_classes = (AllowAny,)
+
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        car = self.get_object()
+        ViewStatisticsModel.objects.create(car=car)
+        return response
 
 
 class CarUpdateView(UpdateAPIView):
@@ -68,6 +82,35 @@ class CarDestroyView(DestroyAPIView):
     serializer_class = CarSerializer
     queryset = CarModel.objects.all()
     permission_classes = (IsOwnCar,)
+
+
+class ViewCountView(APIView):
+    permission_classes = (IsCarOwnerAndPremium,)
+
+    def get(self, request, car_id, period):
+        car = get_object_or_404(CarModel, id=car_id)
+
+        self.check_object_permissions(request, car)
+
+        if period == 'day':
+            start_date = now() - timedelta(days=1)
+        elif period == 'week':
+            start_date = now() - timedelta(weeks=1)
+        elif period == 'month':
+            start_date = now() - timedelta(days=30)
+        elif period == 'all_time':
+            start_date = None
+        else:
+            return Response({'error': 'Invalid period'}, status=400)
+
+        if start_date:
+            view_count = ViewStatisticsModel.objects.filter(car=car, viewed_at__gte=start_date).count()
+        else:
+            view_count = ViewStatisticsModel.objects.filter(car=car).count()
+
+        return Response({
+            'car_id': car_id, 'period': period, 'view_count': view_count
+        })
 
 # --------------------------------------- Cars views end --------------------------------------------
 # --------------------------------------- Brands views start --------------------------------------------
@@ -158,19 +201,29 @@ class ModelDestroyView(DestroyAPIView):
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# class AveragePriceStatistics(RetrieveAPIView):
-#     permission_classes = (IsPremium,)
-#     queryset = CarModel.objects.all()
-#
-#     def get(self, *args, **kwargs):
-#         average = CarModel.objects.average_price_statistics(car=self.get_object())
-#         return Response({'average_price': average}, status=status.HTTP_200_OK)
-#
-# class AverageRegionPriceStatistics(RetrieveAPIView):
-#     permission_classes = (IsPremium,)
-#     queryset = CarModel.objects.all()
-#
-#     def get(self, *args, **kwargs):
-#         average = CarModel.objects.average_region_price_statistics(car=self.get_object())
-#         return Response({'average_price': average}, status=status.HTTP_200_OK)
-#
+class AveragePriceStatistics(RetrieveAPIView):
+    permission_classes = (IsPremium,)
+    queryset = CarModel.objects.all()
+
+    def get(self, *args, **kwargs):
+        average = CarModel.objects.average_price_statistics(car=self.get_object())
+        return Response({'average_price': average}, status=status.HTTP_200_OK)
+
+
+class AverageRegionPriceStatistics(RetrieveAPIView):
+    permission_classes = (IsPremium,)
+    queryset = CarModel.objects.all()
+
+    def get(self, *args, **kwargs):
+        average = CarModel.objects.average_region_price_statistics(car=self.get_object())
+        return Response({'average_price': average}, status=status.HTTP_200_OK)
+
+
+class AverageCityPriceStatistics(RetrieveAPIView):
+    permission_classes = (IsPremium,)
+    queryset = CarModel.objects.all()
+
+    def get(self, *args, **kwargs):
+        average = CarModel.objects.average_city_price_statistics(car=self.get_object())
+        return Response({'average_price': average}, status=status.HTTP_200_OK)
+

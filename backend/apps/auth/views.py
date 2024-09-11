@@ -3,14 +3,14 @@ from django.utils.decorators import method_decorator
 
 from rest_framework import status
 from rest_framework.generics import GenericAPIView, get_object_or_404
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from drf_yasg.utils import swagger_auto_schema
 
 from core.dataclasses.user_dataclass import User
 from core.services.email_service import EmailService
-from core.services.jwt_service import ActivateToken, JWTService, RecoveryToken
+from core.services.jwt_service import ActivateToken, JWTService, RecoveryToken, SocketToken
 
 from apps.auth.serializers import EmailSerializer, PasswordSerializer
 from apps.users.serializers import UserSerializer
@@ -67,4 +67,10 @@ class RecoverPasswordView(GenericAPIView):
         user.set_password(serializer.data['password'])
         user.save()
         return Response({'detail': 'password was changed'}, status=status.HTTP_200_OK)
+
+class SocketView(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, *args, **kwargs):
+        token = JWTService.create_token(self.request.user, SocketToken)
+        return Response({'token': str(token)}, status=status.HTTP_200_OK)
 

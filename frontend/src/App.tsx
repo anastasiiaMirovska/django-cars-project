@@ -1,16 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
-import {CarModel} from "./models/CarModel";
+import {ICarModel} from "./models/ICarModel";
 
 const App = () => {
 
-    const [cars, setCars] = useState<CarModel[]>([])
+    const [cars, setCars] = useState<ICarModel[]>([])
     useEffect(() => {
         axios.get('/api/cars').then(({data})=>setCars(data.data))
     }, []);
     return (
         <div>
-            {cars.map(car=><div key={car.id}>{car.id} {car.brand}</div>)}
+            <h1>Cars</h1>
+            {cars.map((car:ICarModel)=><div key={car.id}>{car.id} {car.model.name}</div>)}
         </div>
     );
 };
