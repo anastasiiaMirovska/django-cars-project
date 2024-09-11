@@ -35,13 +35,11 @@ class ActivateUserView(GenericAPIView):
 
 
 @method_decorator(name='post',
-                  decorator=swagger_auto_schema(security=[], operation_summary='Send request for recovery '))
+                  decorator=swagger_auto_schema(security=[], operation_summary='Send request for recovery'))
 class RecoveryPasswordRequestView(GenericAPIView):
     """Recovery password request"""
     permission_classes = (AllowAny,)
-
-    def get_serializer_class(self):
-        pass
+    serializer_class = EmailSerializer
 
     def post(self, *args, **kwargs):
         data = self.request.data

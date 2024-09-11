@@ -29,7 +29,7 @@ class EmailService:
     @classmethod
     def register_email(cls, user: User):
         token = JWTService.create_token(user, ActivateToken)
-        url = f'http://localhost:3000/activate/{token}'
+        url = f'api/activate/{token}'
         cls.__send_email.delay(
             user.email,
             template_name='register.html',
@@ -40,7 +40,7 @@ class EmailService:
     @classmethod
     def recovery_email(cls, user: User):
         token = JWTService.create_token(user, RecoveryToken)
-        url = f'http://localhost:3000/recovery/{token}'
+        url = f'api/recovery/{token}'
         cls.__send_email(user.email, 'recovery.html', {'url': url}, 'Recovery password')
 
     @classmethod
