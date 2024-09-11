@@ -11,6 +11,7 @@ def get_user(token):
     except (Exception,):
         return None
 
+
 class AuthSocketMiddleware(BaseMiddleware):
     async def __call__(self, scope, receive, send):
         token = dict(

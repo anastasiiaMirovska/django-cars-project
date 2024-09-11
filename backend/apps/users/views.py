@@ -23,6 +23,7 @@ from apps.users.serializers import UserSerializer
 
 UserModel = get_user_model()
 
+
 # --------------------------------------- User views start --------------------------------------------
 
 @method_decorator(name='post', decorator=swagger_auto_schema(security=[], operation_summary='Create user account'))
@@ -32,12 +33,14 @@ class UserCreateView(CreateAPIView):
     queryset = UserModel.objects.all()
     serializer_class = UserSerializer
 
+
 @method_decorator(name='get', decorator=swagger_auto_schema(security=[], operation_summary='Get all users'))
 class UserListView(ListAPIView):
     """List all users in the system"""
     permission_classes = (AllowAny,)
     queryset = UserModel.objects.all()
     serializer_class = UserSerializer
+
 
 @method_decorator(name='get', decorator=swagger_auto_schema(security=[], operation_summary='Get a specific user'))
 class UserRetrieveView(RetrieveAPIView):
@@ -170,4 +173,3 @@ class AdminToUserView(GenericAPIView):
             user.save()
         serializer = UserSerializer(user)
         return Response(serializer.data, status.HTTP_200_OK)
-

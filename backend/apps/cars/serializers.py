@@ -137,7 +137,7 @@ class CarSerializer(serializers.ModelSerializer):
             car_model = CarModelModel.objects.get(id=car_model)
         validated_data['car_model'] = car_model
 
-        price =validated_data.pop('price', {})
+        price = validated_data.pop('price', {})
 
         profile_data = validated_data.pop('profile', {})
         is_active = False
@@ -154,4 +154,3 @@ class CarSerializer(serializers.ModelSerializer):
     @atomic
     def update(self, instance, validated_data):
         return instance
-

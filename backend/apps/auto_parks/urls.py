@@ -7,4 +7,3 @@ urlpatterns = [
     path('/create', AutoParkCreateView.as_view(), name='dealership-create'),
     path('/<int:pk>', AutoParkRetrieveUpdateDestroyView.as_view(), name='dealership-retrieve-update-destroy'),
 ]
-

@@ -7,7 +7,6 @@ from apps.cars.choices.transmission_type_choices import TransmissionTypeChoices
 
 
 class CarFilter(filters.FilterSet):
-
     is_used = filters.BooleanFilter('is_used')
 
     # -------------------------------------Search------------------------------------

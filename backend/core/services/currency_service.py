@@ -3,6 +3,7 @@ from datetime import timezone
 from decimal import Decimal
 from urllib import error, request
 
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 
 import requests
@@ -14,7 +15,7 @@ from apps.cars.models import CarPriceModel, CurrencyModel
 
 PRIVATBANK_API_URL = 'https://api.privatbank.ua/p24api/pubinfo?exchange&coursid=5'
 
-# @app.task
+
 
 class CurrencyService:
 

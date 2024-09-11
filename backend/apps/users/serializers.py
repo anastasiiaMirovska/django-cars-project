@@ -50,7 +50,6 @@ class UserSerializer(serializers.ModelSerializer):
             }
         }
 
-
     @atomic
     def create(self, validated_data: dict):
         print(validated_data)

@@ -6,4 +6,3 @@ class IsAccountOwner(BasePermission):
         if request.user.id == obj.id:
             return True
         return False
-

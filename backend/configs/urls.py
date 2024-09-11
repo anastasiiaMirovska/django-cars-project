@@ -30,7 +30,7 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="admin@gmail.com")
     ),
     public=True,
-    permission_classes=[AllowAny,]
+    permission_classes=[AllowAny, ]
 )
 
 urlpatterns = [

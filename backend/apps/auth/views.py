@@ -17,7 +17,9 @@ from apps.users.serializers import UserSerializer
 
 UserModel: User = get_user_model()
 
-@method_decorator(name='patch', decorator=swagger_auto_schema(security=[], operation_summary='Authenticate user account'))
+
+@method_decorator(name='patch',
+                  decorator=swagger_auto_schema(security=[], operation_summary='Authenticate user account'))
 class ActivateUserView(GenericAPIView):
     """Activate user account with token"""
     permission_classes = (AllowAny,)
@@ -32,7 +34,8 @@ class ActivateUserView(GenericAPIView):
         return Response(serializer.data, status.HTTP_200_OK)
 
 
-@method_decorator(name='post', decorator=swagger_auto_schema(security=[], operation_summary='Send request for recovery '))
+@method_decorator(name='post',
+                  decorator=swagger_auto_schema(security=[], operation_summary='Send request for recovery '))
 class RecoveryPasswordRequestView(GenericAPIView):
     """Recovery password request"""
     permission_classes = (AllowAny,)
@@ -49,7 +52,8 @@ class RecoveryPasswordRequestView(GenericAPIView):
         return Response({'detail': 'check your email'}, status=status.HTTP_200_OK)
 
 
-@method_decorator(name='post', decorator=swagger_auto_schema(security=[], operation_summary='Recover password with given token'))
+@method_decorator(name='post',
+                  decorator=swagger_auto_schema(security=[], operation_summary='Recover password with given token'))
 class RecoverPasswordView(GenericAPIView):
     """Recover password with given token"""
     permission_classes = (AllowAny,)
@@ -68,9 +72,10 @@ class RecoverPasswordView(GenericAPIView):
         user.save()
         return Response({'detail': 'password was changed'}, status=status.HTTP_200_OK)
 
+
 class SocketView(GenericAPIView):
     permission_classes = (IsAuthenticated,)
+
     def get(self, *args, **kwargs):
         token = JWTService.create_token(self.request.user, SocketToken)
         return Response({'token': str(token)}, status=status.HTTP_200_OK)
-

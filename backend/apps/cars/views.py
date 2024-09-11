@@ -45,6 +45,7 @@ class CarCreateView(CreateAPIView):
     queryset = CarModel.objects.all()
     permission_classes = (IsAuthenticated,)
 
+
 @method_decorator(name='get', decorator=swagger_auto_schema(security=[], operation_summary='Get all cars'))
 class CarListView(ListAPIView):
     """List all cars"""
@@ -52,8 +53,6 @@ class CarListView(ListAPIView):
     queryset = CarModel.objects.all()
     permission_classes = (AllowAny,)
     filterset_class = CarFilter
-
-
 
 
 @method_decorator(name='get', decorator=swagger_auto_schema(security=[], operation_summary='Get a specific car'))
@@ -112,6 +111,7 @@ class ViewCountView(APIView):
             'car_id': car_id, 'period': period, 'view_count': view_count
         })
 
+
 # --------------------------------------- Cars views end --------------------------------------------
 # --------------------------------------- Brands views start --------------------------------------------
 
@@ -129,6 +129,7 @@ class BrandListView(ListAPIView):
     permission_classes = (AllowAny,)
     queryset = CarBrandModel.objects.all()
     pagination_class = None
+
 
 @method_decorator(name='get', decorator=swagger_auto_schema(security=[], operation_summary='Get a specific brand'))
 class BrandRetrieveView(RetrieveAPIView):
@@ -151,6 +152,7 @@ class BrandDestroyView(DestroyAPIView):
     permission_classes = (IsAdminUser,)
     queryset = CarBrandModel.objects.all()
 
+
 # --------------------------------------- Brands views end --------------------------------------------
 # --------------------------------------- Car models views start --------------------------------------------
 
@@ -160,6 +162,7 @@ class ModelCreateView(CreateAPIView):
     serializer_class = CarModelSerializer
     permission_classes = (IsAdminUser,)
     queryset = CarModelModel.objects.all()
+
 
 @method_decorator(name='get', decorator=swagger_auto_schema(security=[], operation_summary='Get all car models'))
 class ModelListView(ListAPIView):
@@ -190,6 +193,7 @@ class ModelDestroyView(DestroyAPIView):
     serializer_class = CarModelSerializer
     permission_classes = (IsAdminUser,)
     queryset = CarModelModel.objects.all()
+
 
 # --------------------------------------- Car models views end --------------------------------------------
 
@@ -222,4 +226,3 @@ class AverageCityPriceStatistics(RetrieveAPIView):
     def get(self, *args, **kwargs):
         average = CarModel.objects.average_city_price_statistics(car=self.get_object())
         return Response({'average_price in UAH': average}, status=status.HTTP_200_OK)
-

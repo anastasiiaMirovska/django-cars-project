@@ -46,4 +46,3 @@ class ChatConsumer(GenericAsyncAPIConsumer):
     def get_profile_name(self):
         user = self.scope['user']
         return user.profile.name
-

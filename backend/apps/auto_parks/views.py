@@ -39,4 +39,3 @@ class AutoParkRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
         if self.request.method == 'GET':
             return (AllowAny(),)
         return (IsOwnerOrAdmin(),)
-

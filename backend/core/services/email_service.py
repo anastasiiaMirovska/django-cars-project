@@ -16,7 +16,6 @@ from apps.cars.models import CarPriceModel, CurrencyModel
 UserModel = get_user_model()
 
 
-
 class EmailService:
     @staticmethod
     @app.task
@@ -26,7 +25,6 @@ class EmailService:
         msg = EmailMultiAlternatives(subject=subject, from_email=os.environ.get('EMAIL_HOST_USER'), to=[to])
         msg.attach_alternative(html_context, 'text/html')
         msg.send()
-
 
     @classmethod
     def register_email(cls, user: User):
@@ -50,4 +48,5 @@ class EmailService:
         managers = UserModel.objects.filter(is_active=True, is_staff=True, is_superuser=False)
         manager = random.choice(managers)
 
-        cls.__send_email(manager.email, 'bad_words.html', {'user_id': f'{user_id}', 'car_id': f'{car_id}'}, 'Bad words detected')
+        cls.__send_email(manager.email, 'bad_words.html', {'user_id': f'{user_id}', 'car_id': f'{car_id}'},
+                         'Bad words detected')
